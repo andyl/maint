@@ -129,8 +129,8 @@ mix maint.setup deps_outdated # one chore
 ### `mix maint.chat`
 
 Start an interactive LLM-powered chat session. The agent can reason across all
-your chores, run them, check health, and fix issues — all through natural
-language.
+your chores and conventional mix tasks, run them, check health, and fix issues
+— all through natural language.
 
 ```bash
 mix maint.chat
