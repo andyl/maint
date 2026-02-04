@@ -7,7 +7,9 @@ defmodule Maint.Chore.DepsUnused do
   are flagged as potentially unused.
   """
 
-  @behaviour Maint.Chore
+  use Maint.Chore
+
+  @shortdoc "Identify potentially unused dependencies"
 
   @impl true
   def run(_opts) do
@@ -33,16 +35,6 @@ defmodule Maint.Chore.DepsUnused do
         list = Enum.map_join(deps, "\n  ", &Atom.to_string/1)
         {:ok, "Potentially unused dependencies:\n  #{list}"}
     end
-  end
-
-  @impl true
-  def health do
-    {:ok, []}
-  end
-
-  @impl true
-  def setup do
-    :ok
   end
 
   defp lib_files do

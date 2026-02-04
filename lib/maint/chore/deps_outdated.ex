@@ -5,7 +5,9 @@ defmodule Maint.Chore.DepsOutdated do
   Wraps `mix hex.outdated` and returns its output.
   """
 
-  @behaviour Maint.Chore
+  use Maint.Chore
+
+  @shortdoc "Check for outdated Hex dependencies"
 
   @impl true
   def run(_opts) do
@@ -13,15 +15,5 @@ defmodule Maint.Chore.DepsOutdated do
       {output, 0} -> {:ok, output}
       {output, _} -> {:ok, output}
     end
-  end
-
-  @impl true
-  def health do
-    {:ok, []}
-  end
-
-  @impl true
-  def setup do
-    :ok
   end
 end

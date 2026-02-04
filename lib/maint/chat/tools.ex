@@ -96,7 +96,12 @@ defmodule Maint.Chat.Tools do
       chores ->
         lines =
           Enum.map_join(chores, "\n", fn chore ->
-            "- #{chore[:name]} (#{inspect(chore[:module])})"
+            base = "- #{chore[:name]} (#{inspect(chore[:module])})"
+
+            case Maint.shortdoc(chore[:module]) do
+              nil -> base
+              desc -> "#{base} - #{desc}"
+            end
           end)
 
         {:ok, "Configured chores:\n#{lines}"}

@@ -31,7 +31,7 @@ mix usage_rules.search_docs "query" -p req  # Search docs for a specific package
 
 ### Chore System (core concept)
 
-Chores are maintenance task modules in the `Maint.Chore` namespace that implement the `Maint.Chore` behavior with three callbacks: `run/1`, `health/0`, `setup/0`. Chores can live in any application installed as a mix.exs dependency.
+Chores are maintenance task modules in the `Maint.Chore` namespace that `use Maint.Chore` and implement three callbacks: `run/1`, `health/0`, `setup/0`. Chores can live in any application installed as a mix.exs dependency. Chores support `@shortdoc` (one-line description), `@moduledoc` (full docs), and `@requirements` (list of chore names that must run first) module attributes. The `health/0` and `setup/0` callbacks have default implementations provided by `use Maint.Chore`.
 
 A chore has two states:
 - **Installed** — the module is present (loaded as a dependency)

@@ -35,6 +35,8 @@ defmodule Mix.Tasks.Maint.Run do
         config_opts = chore[:opts] || []
         merged_opts = Keyword.merge(config_opts, cli_opts)
 
+        run_requirements(module, MapSet.new())
+
         case module.run(merged_opts) do
           {:ok, result} ->
             Mix.shell().info(format_result(result))
@@ -48,6 +50,37 @@ defmodule Mix.Tasks.Maint.Run do
           "Chore #{inspect(name)} is not configured. Run `mix maint.ls` to see available chores."
         )
     end
+  end
+
+  defp run_requirements(module, already_run) do
+    Maint.requirements(module)
+    |> Enum.reduce(already_run, fn req_name, acc ->
+      if MapSet.member?(acc, req_name) do
+        acc
+      else
+        case Maint.find_chore(req_name) do
+          {:ok, req_chore} ->
+            req_module = req_chore[:module]
+            acc = run_requirements(req_module, acc)
+
+            Mix.shell().info("Running requirement: #{req_name}")
+
+            case req_module.run(req_chore[:opts] || []) do
+              {:ok, _} ->
+                MapSet.put(acc, req_name)
+
+              {:error, reason} ->
+                Mix.raise("Requirement #{req_name} failed: #{inspect(reason)}")
+            end
+
+          {:error, :not_found} ->
+            Mix.raise(
+              "Required chore #{inspect(req_name)} is not configured. " <>
+                "Add it with `mix maint.add`."
+            )
+        end
+      end
+    end)
   end
 
   defp format_result(result) when is_binary(result), do: result

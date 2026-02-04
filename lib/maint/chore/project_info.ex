@@ -3,7 +3,9 @@ defmodule Maint.Chore.ProjectInfo do
   Displays project metadata including app name, version, Elixir version, and dependency count.
   """
 
-  @behaviour Maint.Chore
+  use Maint.Chore
+
+  @shortdoc "Display project metadata"
 
   @impl true
   def run(_opts) do
@@ -19,15 +21,5 @@ defmodule Maint.Chore.ProjectInfo do
     """
 
     {:ok, info}
-  end
-
-  @impl true
-  def health do
-    {:ok, []}
-  end
-
-  @impl true
-  def setup do
-    :ok
   end
 end

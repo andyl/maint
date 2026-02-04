@@ -15,7 +15,6 @@ defmodule Mix.Tasks.Maint.LsTest do
 
     output = capture_io(fn -> Mix.Tasks.Maint.Ls.run([]) end)
     assert output =~ "test"
-    assert output =~ "Maint.Chore.TestChore"
   end
 
   test "shows no chores message when empty" do

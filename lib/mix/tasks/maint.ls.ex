@@ -48,10 +48,19 @@ defmodule Mix.Tasks.Maint.Ls do
   defp print_chores(chores, :configured) do
     Mix.shell().info("Configured chores:\n")
 
+    name_width =
+      chores
+      |> Enum.map(fn chore -> chore[:name] |> to_string() |> String.length() end)
+      |> Enum.max(fn -> 0 end)
+
     for chore <- chores do
-      name = chore[:name]
-      module = inspect(chore[:module])
-      Mix.shell().info("  #{name} (#{module})")
+      name = to_string(chore[:name])
+      padded = String.pad_trailing(name, name_width)
+
+      case Maint.shortdoc(chore[:module]) do
+        nil -> Mix.shell().info("  #{padded}")
+        desc -> Mix.shell().info("  #{padded} - #{desc}")
+      end
     end
 
     Mix.shell().info("")
@@ -65,7 +74,10 @@ defmodule Mix.Tasks.Maint.Ls do
     Mix.shell().info("Installed but unconfigured:\n")
 
     for module <- modules do
-      Mix.shell().info("  #{inspect(module)}")
+      case Maint.shortdoc(module) do
+        nil -> Mix.shell().info("  #{inspect(module)}")
+        desc -> Mix.shell().info("  #{inspect(module)} - #{desc}")
+      end
     end
 
     Mix.shell().info("")

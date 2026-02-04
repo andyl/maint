@@ -48,6 +48,35 @@ defmodule Maint do
     end
   end
 
+  @doc "Returns the `@shortdoc` string for a chore module, or `nil`."
+  @spec shortdoc(module()) :: String.t() | nil
+  def shortdoc(module) do
+    module.__info__(:attributes)
+    |> Keyword.get(:shortdoc, [nil])
+    |> List.first()
+  rescue
+    _ -> nil
+  end
+
+  @doc "Returns the `@moduledoc` string for a chore module, or `nil`."
+  @spec moduledoc(module()) :: String.t() | nil
+  def moduledoc(module) do
+    case Code.fetch_docs(module) do
+      {:docs_v1, _, _, _, %{"en" => doc}, _, _} -> doc
+      _ -> nil
+    end
+  end
+
+  @doc "Returns the `@requirements` list for a chore module."
+  @spec requirements(module()) :: [atom()]
+  def requirements(module) do
+    module.__info__(:attributes)
+    |> Keyword.get(:requirements, [[]])
+    |> List.first()
+  rescue
+    _ -> []
+  end
+
   @doc """
   Checks whether a module implements the `Maint.Chore` behaviour.
   """

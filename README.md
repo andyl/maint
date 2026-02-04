@@ -55,11 +55,17 @@ mix deps.get
 ### Chores
 
 A **chore** is a maintenance task module in the `Maint.Chore.*` namespace that
-implements the `Maint.Chore` behaviour with three callbacks:
+uses `Maint.Chore` and implements three callbacks:
 
 - `run(opts)` — Execute the chore. Returns `{:ok, result} | {:error, reason}`.
 - `health()` — Introspect requirements (API keys, tools, deps). Returns `{:ok, [checks]} | {:error, [issues]}`.
 - `setup()` — Auto-fix missing requirements. Returns `:ok | {:error, reason}`.
+
+Chores also support these module attributes:
+
+- `@shortdoc` — A one-line description shown by `mix maint.ls`.
+- `@moduledoc` — Full documentation (standard Elixir).
+- `@requirements` — List of chore names (atoms) that must run before this one.
 
 ### Chore States
 
@@ -94,7 +100,8 @@ mix maint.ls --all    # also show installed but unconfigured
 ### `mix maint.run <name>`
 
 Run a configured chore by name. Config opts are merged with any CLI flags
-(CLI takes precedence).
+(CLI takes precedence). If the chore declares `@requirements`, those chores
+are run first automatically.
 
 ```bash
 mix maint.run project_info
@@ -200,7 +207,10 @@ Maint ships with three built-in chores:
 
 ```elixir
 defmodule Maint.Chore.MyChore do
-  @behaviour Maint.Chore
+  use Maint.Chore
+
+  @shortdoc "Does something useful"
+  @requirements [:project_info]
 
   @impl true
   def run(opts) do
@@ -208,17 +218,8 @@ defmodule Maint.Chore.MyChore do
     {:ok, "All good!"}
   end
 
-  @impl true
-  def health do
-    # Check that requirements are met
-    {:ok, []}
-  end
-
-  @impl true
-  def setup do
-    # Auto-fix missing requirements, or return {:error, reason}
-    :ok
-  end
+  # health/0 and setup/0 have sensible defaults via `use Maint.Chore`.
+  # Override them if your chore has specific requirements.
 end
 ```
 
