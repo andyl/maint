@@ -1,17 +1,25 @@
 # Maint
 
-An extensible Elixir maintenance automation framework. Define "chores" as
-modules implementing the `Maint.Chore` behaviour, register them in `config.exs`,
+An extensible maintenance automation framework for Elixir apps. Define "chores" as
+modules implementing the `Maint.Chore` behavior, register them in `config.exs`,
 and invoke them via Mix tasks — or chat with an LLM that can run them for you.
 
-## Installation
+This is a personal experiment to learn the (jido)[https://github.com/agentjido]
+ecosystem and its LLM driver (req_llm)[https://github.com/agentjido/req_llm].
+This application should only be used for demo/learning purposes.
 
-Add `maint` to your list of dependencies in `mix.exs`:
+## Target Users
+
+Elixir developers who want a standardized, extensible way to run project
+maintenance tasks (issue automation, dependency checks, code and documentation
+hygiene, project health) from the CLI.
+
+## Installing in your Elixir App 
 
 ```elixir
 def deps do
   [
-    {:maint, "~> 0.1.0"}
+    {:maint, github: "andyl/maint"}
   ]
 end
 ```
@@ -132,7 +140,7 @@ mix maint.chat --model anthropic:claude-haiku-4-5
 Requires an API key for the configured provider (e.g., `ANTHROPIC_API_KEY`
 environment variable or `.env` file).
 
-#### Example questions
+#### Example Chat questions
 
 ```
 you> What maintenance chores do I have available?
