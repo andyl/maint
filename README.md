@@ -4,8 +4,8 @@ An extensible maintenance automation framework for Elixir apps. Define "chores" 
 modules implementing the `Maint.Chore` behavior, register them in `config.exs`,
 and invoke them via Mix tasks — or chat with an LLM that can run them for you.
 
-This is a personal experiment to learn the (jido)[https://github.com/agentjido]
-ecosystem and its LLM driver (req_llm)[https://github.com/agentjido/req_llm].
+This is a personal experiment to learn the [jido](https://github.com/agentjido)
+ecosystem and its LLM driver [req_llm](https://github.com/agentjido/req_llm).
 This application should only be used for demo/learning purposes.
 
 ## Target Users
