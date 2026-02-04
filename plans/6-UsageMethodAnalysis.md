@@ -15,18 +15,18 @@ project-dep model while enabling system-wide usage.
 
 ## 2. Quick Comparison
 
-| Criteria                     | Project Dep (status quo) | Escript            | Mix Archive            | Standalone Project (`~/.config/maint/`) | Mix.install Script     |
-|------------------------------|--------------------------|--------------------|------------------------|-----------------------------------------|------------------------|
-| Installation effort          | `mix deps.get`           | `mix escript.build && cp` | `mix archive.install`  | Clone/scaffold + `mix deps.get`         | None (just run)        |
-| Chore discovery              | Full (compiled modules)  | Frozen at build    | Limited (archive only) | Full (own VM)                           | Full (per-invocation)  |
-| Runtime dep resolution       | Mix handles it           | Baked in           | Shares host project    | Independent                             | Mix.install handles it |
-| Config extensibility         | `config.exs`             | Compile-time only  | None (no config)       | Own `config.exs`                        | Inline only            |
-| Igniter compatibility        | Full                     | None               | Conflict risk          | Full (own project)                      | None                   |
-| Jido/JidoAI/ReqLLM compat   | Full                     | Partial (no plugins)| Conflict risk         | Full (own project)                      | Full but slow          |
-| Access to host project code  | Full (same VM)           | None               | Full (same VM)         | None (separate VM)                      | None                   |
-| Startup overhead             | None (already loaded)    | Low                | Low                    | ~2-5s (mix startup)                     | High (compile + cache) |
-| Updatability                 | `mix deps.update`        | Rebuild + copy     | `mix archive.install`  | `mix deps.update` in standalone         | Always latest (or cached) |
-| Offline capable              | Yes                      | Yes                | Yes                    | Yes                                     | No (first run)         |
+| Criteria                    | Project Dep (status quo) | Escript                   | Mix Archive            | Standalone Project (`~/.config/maint/`) | Mix.install Script        |
+|-----------------------------|--------------------------|---------------------------|------------------------|-----------------------------------------|---------------------------|
+| Installation effort         | `mix deps.get`           | `mix escript.build && cp` | `mix archive.install`  | Clone/scaffold + `mix deps.get`         | None (just run)           |
+| Chore discovery             | Full (compiled modules)  | Frozen at build           | Limited (archive only) | Full (own VM)                           | Full (per-invocation)     |
+| Runtime dep resolution      | Mix handles it           | Baked in                  | Shares host project    | Independent                             | Mix.install handles it    |
+| Config extensibility        | `config.exs`             | Compile-time only         | None (no config)       | Own `config.exs`                        | Inline only               |
+| Igniter compatibility       | Full                     | None                      | Conflict risk          | Full (own project)                      | None                      |
+| Jido/JidoAI/ReqLLM compat   | Full                     | Partial (no plugins)      | Conflict risk          | Full (own project)                      | Full but slow             |
+| Access to host project code | Full (same VM)           | None                      | Full (same VM)         | None (separate VM)                      | None                      |
+| Startup overhead            | None (already loaded)    | Low                       | Low                    | ~2-5s (mix startup)                     | High (compile + cache)    |
+| Updatability                | `mix deps.update`        | Rebuild + copy            | `mix archive.install`  | `mix deps.update` in standalone         | Always latest (or cached) |
+| Offline capable             | Yes                      | Yes                       | Yes                    | Yes                                     | No (first run)            |
 
 ## 3. Detailed Analysis
 
