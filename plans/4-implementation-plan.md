@@ -1,4 +1,4 @@
-# Maint — Implementation Plan (Phases 1 & 2)
+# Maint — Implementation Plan (Phases 1–3)
 
 ## Step 1: Project Foundation
 
@@ -104,7 +104,70 @@ Two modes controlled by flags:
 - Calls `setup/0` on chores
 - Displays what was auto-fixed and what requires manual action
 
-## Step 9: Tests
+## Step 9: `mix maint.chat` (Phase 3)
+
+### Chat tools module: `lib/maint/chat/tools.ex`
+
+Defines the four ReqLLM tools that the LLM can call:
+
+- `list_chores` — Calls `Maint.configured_chores/0`, formats as text.
+- `run_chore` — Takes `chore_name` param, calls `Maint.find_chore/1` then
+  `module.run/1`.
+- `check_health` — Takes optional `chore_name` param. Runs `health/0` on one
+  or all configured chores.
+- `run_setup` — Takes optional `chore_name` param. Runs `setup/0` on one or
+  all configured chores.
+
+Each tool callback returns `{:ok, string}` for the LLM to consume.
+
+### Chat loop module: `lib/maint/chat.ex`
+
+Core conversation loop built on ReqLLM:
+
+- `Maint.Chat.run/1` — Entry point. Accepts opts (model, system prompt).
+- Maintains a `ReqLLM.Context` with system prompt + conversation history.
+- Uses `ReqLLM.stream_text/3` for real-time token streaming to stdout.
+- After each assistant response, checks for tool calls in the streamed chunks.
+- When tool calls are present: executes them via `ReqLLM.Tool.execute/2`,
+  appends tool result messages to context, then makes a follow-up
+  `stream_text` call for the final response.
+- Recursive loop: read user input → stream response → handle tools → repeat.
+- Exits on "exit", "quit", or Ctrl-D (EOF).
+
+System prompt includes:
+- Description of Maint framework and available tools
+- Instruction to use tools rather than guessing
+- Brief summary of configured chores
+
+### Mix task: `lib/mix/tasks/maint.chat.ex`
+
+- Parses `--model` flag via `OptionParser`
+- Reads default model from `Application.get_env(:maint, :chat, [])[:model]`
+  or falls back to `"anthropic:claude-sonnet-4-20250514"`
+- Calls `Maint.Chat.run(model: model)`
+
+### Configuration
+
+Add to `config/config.exs`:
+
+```elixir
+config :maint,
+  chat: [
+    model: "anthropic:claude-sonnet-4-20250514"
+  ]
+```
+
+### Tests
+
+| File | Tests |
+|------|-------|
+| `test/maint/chat/tools_test.exs` | Tool callback functions return expected formats |
+| `test/mix/tasks/maint_chat_test.exs` | Task module exists and has run/1 |
+
+Note: The interactive chat loop and streaming are difficult to unit test.
+Tests focus on the tool callbacks (pure functions) and basic task wiring.
+
+## Step 10: Tests
 
 ### Test support
 
@@ -140,6 +203,9 @@ Two modes controlled by flags:
 | `lib/mix/tasks/maint.rm.ex` | Mix task (uses Igniter) |
 | `lib/mix/tasks/maint.health.ex` | Mix task (Phase 2) |
 | `lib/mix/tasks/maint.setup.ex` | Mix task (Phase 2) |
+| `lib/maint/chat.ex` | Chat conversation loop (Phase 3) |
+| `lib/maint/chat/tools.ex` | Chat tool definitions (Phase 3) |
+| `lib/mix/tasks/maint.chat.ex` | Mix task (Phase 3) |
 | `test/support/test_chore.ex` | Test helper |
 
 ## Verification
@@ -152,3 +218,4 @@ Two modes controlled by flags:
    - `mix maint.run project_info` prints project metadata
    - `mix maint.run deps_outdated` lists outdated deps
    - `mix maint.health` reports health for all chores
+   - `mix maint.chat` starts interactive LLM chat (requires API key)

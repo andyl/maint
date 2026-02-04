@@ -1,4 +1,4 @@
-# Maint — Product Requirements Document (Phases 1 & 2)
+# Maint — Product Requirements Document (Phases 1–3)
 
 ## Overview
 
@@ -77,9 +77,44 @@ programmatically.
 3. **`Maint.Chore.DepsUnused`** — Identifies potentially unused dependencies by
    scanning the codebase.
 
-## Out of Scope (Phases 1 & 2)
+### Phase 3 — LLM Chat Interface
 
-- LLM integration (Phase 3)
+| Task | Description |
+|------|-------------|
+| `mix maint.chat` | Interactive LLM-powered chat for reasoning across chores. Streaming responses. Tool calling to list, run, health-check, and setup chores. |
+
+#### Chat Configuration
+
+```elixir
+config :maint,
+  chat: [
+    model: "anthropic:claude-sonnet-4-20250514"
+  ]
+```
+
+Overridable via `--model` CLI flag. Requires an `ANTHROPIC_API_KEY` environment
+variable (or other provider key, depending on model string). Keys are loaded
+automatically from `.env` via dotenvy/ReqLLM.
+
+#### Chat Tools
+
+The LLM has access to four tools:
+
+- **list_chores** — Returns all configured chores with name, module, and opts.
+- **run_chore** — Executes a configured chore by name and returns the result.
+- **check_health** — Runs `health/0` on a named chore (or all chores).
+- **run_setup** — Runs `setup/0` on a named chore (or all chores).
+
+#### Architecture Decision
+
+Phase 3 builds directly on **ReqLLM** (`Context`, `Tool`, `stream_text`) rather
+than the full Jido.AI.Agent stack. ReqLLM provides conversation management, tool
+calling, and streaming — everything needed for an interactive CLI chat loop.
+Jido/JidoAI remain as dependencies for potential future use (Phase 3.5+ agent
+orchestration) but are not used by `maint.chat` itself.
+
+## Out of Scope (Phases 1–3)
+
 - TUI dashboard (Phase 4)
 - Scheduling / background jobs
 - Global config (~/.config)
