@@ -14,6 +14,26 @@ Elixir developers who want a standardized, extensible way to run project
 maintenance tasks (issue automation, dependency checks, code and documentation
 hygiene, project health) from the CLI.
 
+## LLM Integration 
+
+Maint provides two points for LLM integration.  
+
+First: there is a mix task `mix maint.chat` which reasons over all your Chores
+and mix tasks, and is able to answer questions, give suggestions and perform
+actions on your behalf.
+
+Second: developers can integrate LLM analysis into Chore modules.  For example,
+particular chores may use:
+
+- sentiment analysis to categorize issues
+- LLM skills to find and fix grammar errors in documentation
+- LLM skills to review code 
+- Agents to identify opportunities for refactoring 
+- etc.
+
+We hope to learn if a chat-style interface and LLM intelligence can reduce the
+workload for developers and project maintainers.
+
 ## Installing in your Elixir App 
 
 ```elixir
