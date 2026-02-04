@@ -1,6 +1,6 @@
 # Maint
 
-An extensible maintenance automation framework for Elixir apps. Define "chores" as
+An extensible automation framework for maintaining Elixir apps. Define "chores" as
 modules implementing the `Maint.Chore` behavior, register them in `config.exs`,
 and invoke them via Mix tasks — or chat with an LLM that can run them for you.
 
